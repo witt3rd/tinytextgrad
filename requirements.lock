@@ -60,7 +60,7 @@ jsonschema==4.23.0
     # via litellm
 jsonschema-specifications==2023.12.1
     # via jsonschema
-litellm==1.41.15
+litellm==1.41.19
     # via tinytextgrad
 loguru==0.7.2
     # via tinytextgrad

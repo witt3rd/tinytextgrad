@@ -91,7 +91,7 @@ jupyter-client==8.6.2
 jupyter-core==5.7.2
     # via ipykernel
     # via jupyter-client
-litellm==1.41.15
+litellm==1.41.19
     # via tinytextgrad
 loguru==0.7.2
     # via tinytextgrad

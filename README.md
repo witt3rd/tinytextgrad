@@ -1,6 +1,6 @@
 # Tiny TextGrad
 
-Like key-value, but with questions and answers.
+Automatic prompt optimization by iteratively refining them using feedback
 
 [![PyPI version](https://badge.fury.io/py/tinytextgrad.svg)](https://badge.fury.io/py/tinytextgrad)
 [![GitHub license](https://img.shields.io/github/license/witt3rd/tinytextgrad.svg)](https://github.com/witt3rd/tinytextgrade/blob/main/LICENSE)

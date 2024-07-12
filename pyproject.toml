@@ -33,3 +33,6 @@ packages = ["src/tinytextgrad"]
 [tool.ruff.lint]
 select = ["E", "F", "I"]
 ignore = ["E501"]
+
+[project.urls]
+GitHub = "https://github.com/witt3rd/tinytextgrad"
