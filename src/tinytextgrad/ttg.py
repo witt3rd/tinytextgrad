@@ -3,6 +3,7 @@ from textwrap import dedent
 from typing import Any, Tuple
 
 from loguru import logger
+
 from tinytextgrad.llm import call_llm
 
 #
