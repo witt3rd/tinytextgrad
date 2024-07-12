@@ -8,18 +8,20 @@ from tinytextgrad.llm import call_llm
 
 #
 
-CLEANUP_TEXT_PROMPT = dedent("""
-    Clean up the following text. Remove any meta-commentary or
-    explanations about the text itself. The result should be a clear,
-    concise text ready for direct use.
+APPLY_GRADIENT_PROMPT = dedent("""
+    Generate [REVISED TEXT] from the [ORIGINAL TEXT] based on the [FEEDBACK].
+    Do not include examples unless they were part of the [ORIGINAL TEXT].
+    The [REVISED TEXT] should reflect the [FEEDBACK].
+    The [REVISED TEXT] should not contain explanations or meta-commentary.
     """).strip()
 
-APPLY_GRADIENT_PROMPT = dedent("""
-    Revise the given text based on the feedback.
-    Do not include examples unless they were part of the original text.
-    The revised text should reflect the feedback.
-    The revised text should not contain explanations or meta-commentary.
+CLEANUP_TEXT_PROMPT = dedent("""
+    Given the following [ORIGINAL TEXT], generate [CLEANED TEXT] by
+    remove any meta-commentary or explanations about the text itself.
+    Leave all other [ORIGINAL TEXT] unchanged.
     """).strip()
+
+#
 
 
 @dataclass
@@ -27,6 +29,7 @@ class OptimizationResult:
     variable: "Variable"
     model: str
     temperature: float
+    max_tokens: int
     top_p: float
     frequency_penalty: float
 
@@ -86,7 +89,11 @@ class Variable:
         if self.requires_grad and self.grad:
             new_value = engine.generate(
                 prompt=application_prompt,
-                prompt_input=f"Original text: {self.value}\n\nFeedback: {self.grad}",
+                prompt_input=(
+                    f"[ORIGINAL TEXT]:\n{self.value}\n\n"
+                    + f"[FEEDBACK]:\n{self.grad}\n\n"
+                    + "[REVISED TEXT]:\n"
+                ),
             )
             self.value = self._clean_text(new_value, engine).strip()
             logger.debug(f"∇ Updated value:\n\n{self.value}")
@@ -98,7 +105,7 @@ class Variable:
     ) -> Any:
         cleaned_text = engine.generate(
             prompt=CLEANUP_TEXT_PROMPT,
-            prompt_input=f"Original text: {text}",
+            prompt_input=f"[ORIGINAL TEXT]:\n{text}\n\n[CLEANED TEXT]:\n",
         ).strip()
         return cleaned_text.strip()
 
@@ -121,6 +128,7 @@ class TextLoss:
             [f"Input: {input}\nOutput: {output}" for input, output in results]
         )
         evaluation_input = f"Text:\n{text}\n\nResults:\n{formatted_results}"
+        logger.debug(f"∇ Evaluation input:\n\n{evaluation_input}")
         loss = self.engine.generate(self.feedback_prompt, evaluation_input)
         return loss
 
@@ -170,6 +178,7 @@ class TGD:
             variable=self.variable,
             model=self.model_engine.model_name,
             temperature=self.model_engine.temperature,
+            max_tokens=self.model_engine.max_tokens,
             top_p=self.model_engine.top_p,
             frequency_penalty=self.model_engine.frequency_penalty,
         )

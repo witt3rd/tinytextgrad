@@ -6,5 +6,6 @@ dist/
 wheels/
 *.egg-info
 
+.ruff_cache/
 # venv
 .venv

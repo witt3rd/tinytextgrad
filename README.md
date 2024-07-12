@@ -91,6 +91,10 @@ See [LiteLLM docs](https://docs.litellm.ai/docs/set_keys) for more information o
 
 We're constantly working to improve TinyTextGrad. Here are some features and enhancements we're planning to implement:
 
+- [ ] Split training data into training and validation sets
+
+  - Extend the system to split the training data into training and validation sets, allowing for more robust model training and evaluation.
+
 - [ ] Automatic training set generation
 
   - Develop a system to automatically generate diverse and relevant training sets for prompt optimization.
