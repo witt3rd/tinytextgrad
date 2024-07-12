@@ -79,6 +79,14 @@ The resulting optimized prompt can then be used for more accurate emotion analys
 - Python 3.7+
 - Dependencies listed in `pyproject.toml`
 
+You'll need to set up an OpenAI API key to use the default models.
+
+```bash
+export OPENAI_API_KEY=your_api_key_here
+```
+
+See [LiteLLM docs](https://docs.litellm.ai/docs/set_keys) for more information on setting up API keys.
+
 ## TODO
 
 We're constantly working to improve TinyTextGrad. Here are some features and enhancements we're planning to implement:
