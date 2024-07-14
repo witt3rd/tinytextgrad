@@ -54,9 +54,7 @@ def test_text_loss_forward(text_loss):
     assert len(loss) > 0
 
 
-def test_tgd_generate_results():
-    engine = Engine()
-    variable = Variable("Test prompt")
+def test_tgd_generate_results(engine, variable):
     tgd = TGD(variable, engine, engine, Mock(), ["Input 1", "Input 2"])
     results = tgd.generate_results()
     assert len(results) == 2
@@ -66,21 +64,15 @@ def test_tgd_generate_results():
     )
 
 
-def test_tgd_step():
-    engine = Engine()
-    variable = Variable("Test prompt")
-    loss_fn = TextLoss("Feedback prompt", engine)
-    tgd = TGD(variable, engine, engine, loss_fn, ["Input 1"])
+def test_tgd_step(engine, variable, text_loss):
+    tgd = TGD(variable, engine, engine, text_loss, ["Input 1"])
     original_value = variable.value
     tgd.step()
     assert variable.value != original_value
 
 
-def test_tgd_optimize_text():
-    engine = Engine()
-    variable = Variable("Test prompt")
-    loss_fn = TextLoss("Feedback prompt", engine)
-    tgd = TGD(variable, engine, engine, loss_fn, ["Input 1"])
+def test_tgd_optimize_text(engine, variable, text_loss):
+    tgd = TGD(variable, engine, engine, text_loss, ["Input 1"])
     result = tgd.optimize_text(num_iterations=3)
     assert isinstance(result, OptimizationResult)
     assert result.variable == variable
