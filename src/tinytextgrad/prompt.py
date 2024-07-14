@@ -148,12 +148,12 @@ class Prompt:
         template = Template(self.template)
         return template.render(**kwargs)
 
-    def call_llm(self, prompt_input: str) -> str:
+    def call_llm(self, prompt_input: str, **kwargs) -> str:
         """
         Call the LLM with the given prompt input.
         """
         return call_llm(
-            prompt=self.template,
+            prompt=self.render(**kwargs),
             prompt_input=prompt_input,
             model=self.model,
             temperature=self.temperature,
