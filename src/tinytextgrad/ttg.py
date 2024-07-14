@@ -12,7 +12,8 @@ from tinytextgrad.prompt import Prompt, load_prompt
 
 load_dotenv()
 
-SYS_PROMPT_DIR = os.getenv("SYS_PROMPT_DIR", "sys_prompts")
+package_dir = os.path.dirname(os.path.abspath(__file__))
+SYS_PROMPT_DIR = os.path.join(package_dir, "sys_prompts")
 if not os.path.exists(SYS_PROMPT_DIR):
     raise ValueError(f"Sys prompt directory {SYS_PROMPT_DIR} does not exist.")
 

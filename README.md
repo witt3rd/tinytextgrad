@@ -4,6 +4,7 @@ Automatic prompt optimization by iteratively refining them using feedback
 
 [![PyPI version](https://badge.fury.io/py/tinytextgrad.svg)](https://badge.fury.io/py/tinytextgrad)
 [![CI](https://github.com/witt3rd/tinytextgrad/actions/workflows/ci.yml/badge.svg)](https://github.com/witt3rd/tinytextgrad/actions/workflows/ci.yml)
+[![Rye](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/rye/main/artwork/badge.json)](https://rye.astral.sh)
 [![GitHub license](https://img.shields.io/github/license/witt3rd/tinytextgrad.svg)](https://github.com/witt3rd/tinytextgrade/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/witt3rd/tinytextgrad.svg)](https://github.com/witt3rd/tinytextgrad/issues)
 [![GitHub stars](https://img.shields.io/github/stars/witt3rd/tinytextgrad.svg)](https://github.com/witt3rd/tinytextgrad/stargazers)

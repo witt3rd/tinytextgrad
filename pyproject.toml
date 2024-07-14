@@ -34,7 +34,7 @@ exclude = [".rye"]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/tinytextgrad"]
+packages = ["tinytextgrad"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
