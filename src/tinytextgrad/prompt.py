@@ -1,88 +1,175 @@
-from .ttg import (
-    TGD,
-    Engine,
-    OptimizationResult,
-    TextLoss,
-    Variable,
+import os
+from dataclasses import dataclass
+
+import yaml
+from dotenv import load_dotenv
+from jinja2 import Template
+
+from tinytextgrad.llm import call_llm
+
+#
+
+load_dotenv()
+
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "gpt-3.5-turbo")
+DEFAULT_MODEL_TEMPERATURE = float(os.getenv("DEFAULT_MODEL_TEMPERATURE", "0.7"))
+DEFAULT_MODEL_MAX_TOKENS = int(os.getenv("DEFAULT_MODEL_MAX_TOKENS", "2048"))
+DEFAULT_MODEL_TOP_P = float(os.getenv("DEFAULT_MODEL_TOP_P", "0.95"))
+DEFAULT_MODEL_FREQUENCY_PENALTY = float(
+    os.getenv("DEFAULT_MODEL_FREQUENCY_PENALTY", "0")
 )
 
-# Common loss function instructions
-PROMPT_LOSS_FN_INSTRUCTIONS = """
-Evaluate the prompt and its results. Provide feedback on the following aspects:
+PROMPT_DIR = os.getenv("PROMPT_DIR", "prompts")
+os.makedirs(PROMPT_DIR, exist_ok=True)
 
-- Clarity: The prompt should be unambiguous and clearly state the desired
-  outcome.
-- Specificity: It should include necessary details without being overly verbose.
-- Relevance: All information in the prompt should be pertinent to the task.
-- Consistency: The prompt should not contain contradictory instructions.
-- Actionability: It should guide the AI towards producing a concrete, useful
-  output.
-- Output quality: Assess if the results effectively address the prompt's
-  requirements.
-- Output consistency: Check if multiple runs produce similarly appropriate
-  results.
-- Efficiency: Evaluate if the prompt achieves the desired outcome with minimal
-  complexity.
-
-## Handling of cases where the answer is not in the text
-
-When evaluating a prompt, consider how it handles situations where the required
-information isn't directly available. A good prompt should:
-
-- Encourage the AI to state clearly when it doesn't have the information.
-- Guide the AI to provide related information or suggest where to find the
-  answer.
-- Avoid making up false information to fill gaps.
-- Potentially ask for clarification or additional context if needed.
-
-## Suggestions for improvement
-
-When evaluating a prompt, the assessor should not only identify issues but also
-provide constructive feedback. Suggestions for improvement might include:
-
-- Rewording for clarity if the prompt is ambiguous.
-- Adding or removing details to achieve the right level of specificity.
-- Restructuring the prompt to better guide the AI's response.
-- Incorporating constraints or guidelines to improve output quality.
-- Suggesting ways to make the prompt more robust across different scenarios.
-
-When evaluating, compare the prompt against these criteria and analyze how well
-the results match the intended goal. Look for areas of improvement in both the
-prompt's structure and content based on the quality of the outputs.
-
-Be specific and constructive in your feedback for revising the prompt.
-Do not revise the prompt, just provide feedback.
-Do not provude examples, just provide feedback.
-"""
+#
 
 
-def optimize_prompt(
-    initial_prompt: str,
-    model_name: str,
-    eval_model_name: str,
-    inputs: list[str],
-    num_iterations: int = 5,
-) -> OptimizationResult:
-    model_engine = Engine(model_name)
-    eval_engine = Engine(eval_model_name)
+def parse_frontmatter(
+    content: str,
+) -> tuple[dict, str]:
+    """
+    Parse frontmatter from a string content.
 
-    variable = Variable(
-        value=initial_prompt,
-        role_description="Prompt to optimize",
-    )
+    Parameters
+    ----------
+    content : str
+        The input string containing potential frontmatter.
 
-    loss_fn = TextLoss(
-        PROMPT_LOSS_FN_INSTRUCTIONS,
-        eval_engine,
-    )
+    Returns
+    -------
+    tuple[dict, str]
+        A tuple containing two elements:
+        - dict: The parsed frontmatter as a dictionary.
+        - str: The remaining content after frontmatter.
 
-    optimizer = TGD(
-        variable=variable,
-        model_engine=model_engine,
-        eval_engine=eval_engine,
-        loss_fn=loss_fn,
-        inputs=inputs,
-    )
+    Notes
+    -----
+    Frontmatter should be enclosed in triple dashes
+    (---) at the beginning of the content. If no
+    frontmatter is found, an empty dictionary is
+    returned along with the original content.
+    """
+    metadata = {}
+    if content.startswith("---"):
+        end = content.find("---", 3)
+        if end != -1:
+            metadata = yaml.safe_load(content[3:end])
+            if not isinstance(metadata, dict):
+                metadata = {}
+            content = content[end + 3 :].strip()
+    return metadata, content
 
-    optimized_text = optimizer.optimize_text(num_iterations=num_iterations)
-    return optimized_text
+
+#
+
+
+@dataclass
+class Prompt:
+    """
+    A class representing a prompt for the LLM with
+    parameters and Jinja2 templating support.
+    """
+
+    template: str
+    model: str = DEFAULT_MODEL
+    temperature: float = DEFAULT_MODEL_TEMPERATURE
+    max_tokens: int = DEFAULT_MODEL_MAX_TOKENS
+    top_p: float = DEFAULT_MODEL_TOP_P
+    frequency_penalty: float = DEFAULT_MODEL_FREQUENCY_PENALTY
+    response_format_type: str = "text"  # or "json_object"
+
+    #
+
+    def __str__(self) -> str:
+        return self.template
+
+    def __repr__(self) -> str:
+        return f"Prompt(template={self.template}, model={self.model}, temperature={self.temperature}, max_tokens={self.max_tokens}, top_p={self.top_p}, frequency_penalty={self.frequency_penalty}, response_format_type={self.response_format_type})"
+
+    #
+
+    @classmethod
+    def from_markdown_file(
+        cls,
+        file_path: str,
+    ) -> "Prompt":
+        """
+        Create a prompt from a markdown file.
+        """
+        with open(file_path, "r", encoding="utf-8") as f:
+            metadata, prompt_text = parse_frontmatter(f.read())
+        if not prompt_text:
+            raise ValueError("Markdown file does not contain content.")
+        return cls(
+            model=str(metadata.get("model", DEFAULT_MODEL)),
+            template=prompt_text,
+            temperature=float(
+                metadata.get(
+                    "temperature",
+                    DEFAULT_MODEL_TEMPERATURE,
+                )
+            ),
+            max_tokens=int(
+                metadata.get(
+                    "max_tokens",
+                    DEFAULT_MODEL_MAX_TOKENS,
+                )
+            ),
+            top_p=float(metadata.get("top_p", DEFAULT_MODEL_TOP_P)),
+            frequency_penalty=float(
+                metadata.get(
+                    "frequency_penalty",
+                    DEFAULT_MODEL_FREQUENCY_PENALTY,
+                )
+            ),
+            response_format_type=str(metadata.get("response_format_type", "text")),
+        )
+
+    #
+
+    def save(
+        self,
+        name: str,
+        prompt_dir: str = PROMPT_DIR,
+    ) -> str:
+        """
+        Save the prompt to a file in the given directory.
+        """
+        full_path = os.path.join(prompt_dir, f"{name}.md")
+        with open(full_path, "w", encoding="utf-8") as f:
+            f.write(self.template)
+        return full_path
+
+    def render(self, **kwargs) -> str:
+        """
+        Render the prompt template with the given variables.
+        """
+        template = Template(self.template)
+        return template.render(**kwargs)
+
+    def call_llm(self, prompt_input: str) -> str:
+        """
+        Call the LLM with the given prompt input.
+        """
+        return call_llm(
+            prompt=self.template,
+            prompt_input=prompt_input,
+            model=self.model,
+            temperature=self.temperature,
+            max_tokens=self.max_tokens,
+            top_p=self.top_p,
+            frequency_penalty=self.frequency_penalty,
+            response_format_type=self.response_format_type,
+        )
+
+
+def load_prompt(
+    name: str,
+    prompt_dir: str = PROMPT_DIR,
+) -> Prompt:
+    """
+    Load a prompt from a file in the given directory.
+    """
+    full_path = os.path.join(prompt_dir, f"{name}.md")
+    return Prompt.from_markdown_file(file_path=full_path)

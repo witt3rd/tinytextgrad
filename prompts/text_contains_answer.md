@@ -1,0 +1,1 @@
+Given some text and a question, determine if the text contains the answer to the question. Respond with "Yes" or "No," followed by a brief explanation if needed.

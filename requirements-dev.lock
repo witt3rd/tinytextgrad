@@ -82,6 +82,7 @@ jedi==0.19.1
     # via ipython
 jinja2==3.1.4
     # via litellm
+    # via tinytextgrad
 jsonschema==4.23.0
     # via litellm
 jsonschema-specifications==2023.12.1
@@ -91,7 +92,7 @@ jupyter-client==8.6.2
 jupyter-core==5.7.2
     # via ipykernel
     # via jupyter-client
-litellm==1.41.19
+litellm==1.41.21
     # via tinytextgrad
 loguru==0.7.2
     # via tinytextgrad
@@ -137,6 +138,8 @@ pydantic==2.8.2
     # via openai
 pydantic-core==2.20.1
     # via pydantic
+pydotenv==0.0.7
+    # via tinytextgrad
 pygments==2.18.0
     # via ipython
 pytest==8.2.2
@@ -147,6 +150,7 @@ python-dotenv==1.0.1
 pyyaml==6.0.1
     # via huggingface-hub
     # via pre-commit
+    # via tinytextgrad
 pyzmq==26.0.3
     # via ipykernel
     # via jupyter-client

@@ -1,0 +1,3 @@
+[REVISED TEXT]:
+
+Generate a set of 10 relevant questions and their corresponding answers about the given text. Ensure the questions cover a mix of factual, analytical, application-based, cause-and-effect, comparison, and scenario-based types to provide both surface-level and in-depth knowledge of the subject. If the information required to answer a question is not present in the text, clearly state this and provide suggestions or related context instead.

@@ -1,9 +1,15 @@
 [project]
 name = "tinytextgrad"
-version = "0.1.1"
+version = "0.2.0"
 description = "Automatic prompt optimization by iteratively refining them using feedback"
 authors = [{ name = "Donald Thompson", email = "witt3rd@witt3rd.com" }]
-dependencies = ["litellm>=1.41.15", "loguru>=0.7.2"]
+dependencies = [
+    "litellm>=1.41.15",
+    "loguru>=0.7.2",
+    "pyyaml>=6.0.1",
+    "jinja2>=3.1.4",
+    "pydotenv>=0.0.7",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 

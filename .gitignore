@@ -9,3 +9,4 @@ wheels/
 .ruff_cache/
 # venv
 .venv
+**/.DS_Store

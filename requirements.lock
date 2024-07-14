@@ -56,11 +56,12 @@ importlib-metadata==8.0.0
     # via litellm
 jinja2==3.1.4
     # via litellm
+    # via tinytextgrad
 jsonschema==4.23.0
     # via litellm
 jsonschema-specifications==2023.12.1
     # via jsonschema
-litellm==1.41.19
+litellm==1.41.21
     # via tinytextgrad
 loguru==0.7.2
     # via tinytextgrad
@@ -78,10 +79,13 @@ pydantic==2.8.2
     # via openai
 pydantic-core==2.20.1
     # via pydantic
+pydotenv==0.0.7
+    # via tinytextgrad
 python-dotenv==1.0.1
     # via litellm
 pyyaml==6.0.1
     # via huggingface-hub
+    # via tinytextgrad
 referencing==0.35.1
     # via jsonschema
     # via jsonschema-specifications

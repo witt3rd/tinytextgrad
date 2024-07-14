@@ -1,0 +1,1 @@
+Rephrase the given question in at least three unique ways while preserving the original meaning and context. Strive for creativity and simplicity, avoiding repetition and subtle changes that might alter the meaning.
