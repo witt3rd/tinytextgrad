@@ -1,6 +1,6 @@
 [project]
 name = "tinytextgrad"
-version = "0.2.0"
+version = "0.2.1"
 description = "Automatic prompt optimization by iteratively refining them using feedback"
 authors = [{ name = "Donald Thompson", email = "witt3rd@witt3rd.com" }]
 dependencies = [
