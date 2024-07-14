@@ -10,3 +10,4 @@ wheels/
 # venv
 .venv
 **/.DS_Store
+prompts/
